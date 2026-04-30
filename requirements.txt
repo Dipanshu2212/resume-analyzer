@@ -1,9 +1,9 @@
 streamlit
 pdfplumber
 python-docx
-spacy
+spacy==3.7.2
 scikit-learn
 sentence-transformers
-torch
+torch==2.1.0+cpu --find-links https://download.pytorch.org/whl/torch_stable.html
 numpy
 https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.7.0/en_core_web_md-3.7.0.tar.gz
