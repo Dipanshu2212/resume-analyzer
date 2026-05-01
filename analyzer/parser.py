@@ -1,4 +1,4 @@
-import pdfplumber
+import fitz
 from docx import Document
 import re
 import os
@@ -19,22 +19,23 @@ def clean_text(text: str) -> str:
 
 def extract_text_from_pdf(file) -> str:
     """
-    Extract text from a PDF file object using pdfplumber.
-
-    Args:
-        file: A file-like object (from Streamlit uploader or open())
-
-    Returns:
-        Cleaned extracted text as a single string.
-        Returns empty string if no text could be extracted.
+    Extract text from PDF using pymupdf (Python 3.14 compatible)
     """
+    # Read file bytes
+    if hasattr(file, 'read'):
+        file_bytes = file.read()
+    else:
+        with open(file, 'rb') as f:
+            file_bytes = f.read()
+
     pages_text = []
 
-    with pdfplumber.open(file) as pdf:      # pdfplumber accepts both path string AND real file objects
-        for page in pdf.pages:
-            text = page.extract_text()
-            if text:
-                pages_text.append(text)
+    doc = fitz.open(stream=file_bytes, filetype="pdf")
+    for page in doc:
+        text = page.get_text()
+        if text.strip():
+            pages_text.append(text)
+    doc.close()
 
     if not pages_text:
         return ""

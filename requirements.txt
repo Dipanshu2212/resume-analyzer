@@ -1,7 +1,5 @@
 streamlit>=1.32.0
-pdfplumber>=0.10.0
-pdfminer.six>=20221105
-pypdfium2>=4.18.0
+pymupdf>=1.23.0
 python-docx>=1.1.0
 spacy==3.8.3
 scikit-learn>=1.3.0
