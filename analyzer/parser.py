@@ -1,4 +1,3 @@
-from docx import Document
 import re
 
 
@@ -10,8 +9,8 @@ def clean_text(text: str) -> str:
 
 
 def extract_text_from_pdf(file) -> str:
-    from pypdf import PdfReader   # import inside function
-    
+    from pypdf import PdfReader      # import inside function
+
     if hasattr(file, 'read'):
         file_bytes = file
     else:
@@ -19,6 +18,7 @@ def extract_text_from_pdf(file) -> str:
 
     reader = PdfReader(file_bytes)
     pages_text = []
+
     for page in reader.pages:
         text = page.extract_text()
         if text and text.strip():
@@ -30,6 +30,8 @@ def extract_text_from_pdf(file) -> str:
 
 
 def extract_text_from_docx(file) -> str:
+    from docx import Document        # import inside function
+
     doc = Document(file)
     paragraphs_text = []
 
@@ -40,7 +42,6 @@ def extract_text_from_docx(file) -> str:
 
     if not paragraphs_text:
         return ""
-
     return clean_text("\n".join(paragraphs_text))
 
 
