@@ -1,3 +1,4 @@
+import spacy
 import re
 import json
 import os
@@ -44,13 +45,12 @@ ORG_BLOCKLIST = {
     "engineer", "analyst", "manager", "lead", "head",
 }
 
-def get_nlp():
-    import spacy                          # import inside function
-    try:
-        return spacy.load("en_core_web_md")
-    except OSError:
-        raise OSError("spaCy model not found. Run: python -m spacy download en_core_web_md")
-
+try:
+    nlp = spacy.load("C:/Users/dipan/OneDrive/Desktop/Trained/en_core_web_md/resume_ner_model")
+except OSError:
+    raise OSError(
+        "spaCy model not found. Run: python -m spacy download en_core_web_sm"
+    )
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -75,7 +75,6 @@ def extract_entities(text: str) -> dict:
     - ORG detection done via curated list + spaCy as fallback
     - Regex for email and phone
     """
-    nlp = get_nlp()
     doc = nlp(text)
 
     # ── Email ──────────────────────────────────────────────────────────────

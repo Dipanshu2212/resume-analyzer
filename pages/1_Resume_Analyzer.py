@@ -11,12 +11,8 @@ def load_ner_model():
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, ROOT)
 
-try:
-    from analyzer.parser import parse_resume
-    from analyzer.ner import analyze_resume
-except Exception as e:
-    st.error(f"Failed to load modules: {e}")
-    st.stop()
+from analyzer.parser import parse_resume
+from analyzer.ner    import analyze_resume
 
 st.set_page_config(page_title="Resume Analyzer", page_icon="📄", layout="wide")
 

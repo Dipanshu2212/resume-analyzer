@@ -1,11 +1,11 @@
 import re
+from analyzer.vectorizer import get_tfidf_similarity
 
 
 # ──────────────────────────────────────────────────────────────────────────────
 # FUNCTION 1: Score keyword overlap between resume and job description
 # ──────────────────────────────────────────────────────────────────────────────
 def score_keywords(resume_text: str, job_text: str) -> dict:
-    from analyzer.vectorizer import get_tfidf_similarity
     """
     Score how well the resume keywords match the job description.
     Uses TF-IDF cosine similarity as the base metric.

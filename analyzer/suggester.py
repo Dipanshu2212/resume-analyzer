@@ -56,7 +56,6 @@ def get_missing_keywords(resume_text: str, job_text: str) -> list:
 # FUNCTION 2: Get missing skills specifically
 # ──────────────────────────────────────────────────────────────────────────────
 def get_missing_skills(resume_skills: list, job_text: str, all_skills: list) -> list:
-    from analyzer.ner import load_skills
     """
     Find skills mentioned in the job description that the resume is missing.
 
