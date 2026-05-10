@@ -1,19 +1,17 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from sentence_transformers import SentenceTransformer
-import numpy as np
 
-# ── Load BERT model once at module level ──────────────────────────────────────
-# all-MiniLM-L6-v2 is fast, lightweight (~90MB) and accurate enough for resumes
 print("Loading BERT model... (first time may take a minute)")
-bert_model = SentenceTransformer('all-MiniLM-L6-v2')
 print("BERT model loaded.")
 
+
+def get_bert_model():
+    from sentence_transformers import SentenceTransformer
+    return SentenceTransformer('all-MiniLM-L6-v2')
 
 # ──────────────────────────────────────────────────────────────────────────────
 # FUNCTION 1: TF-IDF Vectors
 # ──────────────────────────────────────────────────────────────────────────────
 def get_tfidf_vectors(text1: str, text2: str):
+    from sklearn.feature_extraction.text import TfidfVectorizer
     """
     Convert two texts into TF-IDF vectors using a shared vocabulary.
 
@@ -91,7 +89,10 @@ def get_tfidf_similarity(text1: str, text2: str) -> float:
 # ──────────────────────────────────────────────────────────────────────────────
 # FUNCTION 4: Compute BERT cosine similarity
 # ──────────────────────────────────────────────────────────────────────────────
-def get_bert_similarity(text1: str, text2: str) -> float:
+def get_bert_similarity(text1, text2):
+    from sklearn.metrics.pairwise import cosine_similarity
+    import numpy as np
+    model = get_bert_model()
     """
     Compute cosine similarity between two texts using BERT embeddings.
     BERT captures semantic meaning — "developer" ≈ "engineer" etc.

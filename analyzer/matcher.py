@@ -1,6 +1,5 @@
 import json
 import os
-from analyzer.vectorizer import get_combined_score
 
 # ── Path to job descriptions ───────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -33,7 +32,9 @@ def load_job_descriptions() -> list:
 # ──────────────────────────────────────────────────────────────────────────────
 # FUNCTION 1: Match resume against a single job description
 # ──────────────────────────────────────────────────────────────────────────────
-def match_single_job(resume_text: str, job_description: str) -> dict:
+def match_single_job(resume_text, job_description):
+    from analyzer.vectorizer import get_combined_score   # import here
+    return get_combined_score(resume_text, job_description)
     """
     Compute similarity between a resume and one job description.
 
@@ -50,7 +51,8 @@ def match_single_job(resume_text: str, job_description: str) -> dict:
 # ──────────────────────────────────────────────────────────────────────────────
 # FUNCTION 2: Match resume against all jobs in job_descriptions.json
 # ──────────────────────────────────────────────────────────────────────────────
-def match_with_all_jobs(resume_text: str) -> list:
+def match_with_all_jobs(resume_text):
+    from analyzer.vectorizer import get_combined_score 
     """
     Match resume against all job descriptions and return ranked results.
 
