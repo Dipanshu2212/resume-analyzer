@@ -1,4 +1,5 @@
 import re
+import os
 
 
 def clean_text(text: str) -> str:
@@ -9,28 +10,24 @@ def clean_text(text: str) -> str:
 
 
 def extract_text_from_pdf(file) -> str:
-    from pypdf import PdfReader      # import inside function
+    import pdfplumber
 
-    if hasattr(file, 'read'):
-        file_bytes = file
-    else:
-        file_bytes = open(file, 'rb')
-
-    reader = PdfReader(file_bytes)
     pages_text = []
 
-    for page in reader.pages:
-        text = page.extract_text()
-        if text and text.strip():
-            pages_text.append(text)
+    with pdfplumber.open(file) as pdf:
+        for page in pdf.pages:
+            text = page.extract_text()
+            if text:
+                pages_text.append(text)
 
     if not pages_text:
         return ""
+
     return clean_text("\n".join(pages_text))
 
 
 def extract_text_from_docx(file) -> str:
-    from docx import Document        # import inside function
+    from docx import Document
 
     doc = Document(file)
     paragraphs_text = []
@@ -42,6 +39,7 @@ def extract_text_from_docx(file) -> str:
 
     if not paragraphs_text:
         return ""
+
     return clean_text("\n".join(paragraphs_text))
 
 
@@ -60,11 +58,12 @@ def parse_resume(file) -> str:
 
 
 if __name__ == "__main__":
-    import os
+    import sys
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+    ROOT     = os.path.abspath(os.path.join(BASE_DIR, ".."))
+    sys.path.insert(0, ROOT)
 
     pdf_path = os.path.join(ROOT, "sample_resume.pdf")
-    text = extract_text_from_pdf(pdf_path)
+    text     = extract_text_from_pdf(pdf_path)
     print(text[:500])
     print(f"\nTotal characters: {len(text)}")
