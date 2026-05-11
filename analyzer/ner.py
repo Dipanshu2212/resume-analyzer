@@ -6,13 +6,9 @@ import os
 import spacy
 
 try:
-    nlp = spacy.load("C:/Users/dipan/OneDrive/Desktop/Trained/en_core_web_lg")
+    nlp = spacy.load("en_core_web_lg")
 except OSError:
-    try:
-        nlp = spacy.load("en_core_web_lg")
-    except OSError:
-        nlp = spacy.load("en_core_web_md")
-        raise OSError("Fine-tuned model not found, loading default")
+    nlp = spacy.load("en_core_web_md")
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
