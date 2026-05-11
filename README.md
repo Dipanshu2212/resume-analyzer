@@ -1,3 +1,14 @@
+---
+title: Resume Analyzer
+emoji: 📄
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+sdk_version: 1.32.0
+app_file: app.py
+pinned: false
+---
+
 # 📄 Resume Analyzer & Job Matcher
 
 An AI-powered resume analysis tool that extracts skills, matches job descriptions, scores resumes against ATS systems, and provides actionable improvement suggestions — built with spaCy, BERT, TF-IDF, and Streamlit.
