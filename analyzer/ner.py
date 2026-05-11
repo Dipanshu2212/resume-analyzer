@@ -40,15 +40,41 @@ ORG_BLOCKLIST = {
 
 # ── Known organizations ────────────────────────────────────────────────────────
 KNOWN_ORGS = [
-    "IIT", "NIT", "BITS", "IIM", "VIT", "SRM", "Amity",
-    "Maharana Pratap Group of Institutes", "Delhi University",
-    "Jawaharlal Nehru University", "Anna University",
+    # ── Indian Colleges ────────────────────────────────────────────────────
+    "IIT Bombay", "IIT Delhi", "IIT Madras", "IIT Kanpur", "IIT Kharagpur",
+    "IIT Roorkee", "IIT Guwahati", "IIT Hyderabad", "IIT BHU",
+    "NIT Trichy", "NIT Surathkal", "NIT Warangal", "NIT Calicut",
+    "BITS Pilani", "BITS Goa", "BITS Hyderabad",
+    "VIT Vellore", "VIT Chennai",           # ← "VIT" with city to avoid "Vite" clash
+    "SRM University", "Amity University",
+    "Delhi University", "Mumbai University", "Anna University",
+    "Jawaharlal Nehru University", "Jadavpur University",
+    "Maharana Pratap Group of Institutes",
+    "Maharana Institute of Professional Studies Kanpur",
+    "Kendriya Vidyalaya O.E.F Kanpur",
+    "Dr. Virendra Swarup Public School",
+
+    # ── Global Companies ───────────────────────────────────────────────────
     "Google", "Microsoft", "Amazon", "Apple", "Meta", "Netflix",
+    "Adobe", "Salesforce", "Oracle", "IBM", "Intel", "Nvidia",
+    "Twitter", "LinkedIn", "Uber", "Airbnb", "Spotify",
+
+    # ── Indian Companies ───────────────────────────────────────────────────
     "Infosys", "Wipro", "TCS", "Tata Consultancy Services",
-    "HCL", "Cognizant", "Accenture", "IBM", "Oracle", "Capgemini",
-    "Tech Mahindra", "Flipkart", "Zomato", "Swiggy", "Paytm",
+    "HCL Technologies", "Tech Mahindra", "Cognizant", "Accenture",
+    "Capgemini", "Mphasis", "Hexaware", "Mindtree",
+    "Flipkart", "Zomato", "Swiggy", "Paytm", "Razorpay",
+    "BYJU'S", "Ola", "Myntra", "Meesho", "PhonePe",
+
+    # ── Clubs & Organizations ──────────────────────────────────────────────
     "Tech-E-Clan", "IEEE", "ACM", "NSS", "NCC",
-    "Smart India Hackathon", "GDSC",
+    "Smart India Hackathon",
+    "Google Developer Student Clubs", "GDSC",
+    "Microsoft Learn Student Ambassadors",
+
+    # ── Platforms with ORG context ─────────────────────────────────────────
+    "HackerRank", "LeetCode", "Coursera", "Udemy", "edX",
+    "GitHub", "GitLab",
 ]
 
 # After building organizations list, remove substrings
@@ -73,56 +99,51 @@ def load_skills() -> list:
 
 
 def extract_entities(text: str) -> dict:
-    doc = nlp(text)
+    doc  = nlp(text)
 
+    # ── Email ──────────────────────────────────────────────────────────────
     email_pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
     emails = re.findall(email_pattern, text)
     email  = emails[0] if emails else None
 
+    # ── Phone ──────────────────────────────────────────────────────────────
     phone_pattern = r'(\+?\d[\d\s\-().]{8,14}\d)'
     phones = re.findall(phone_pattern, text)
     phone  = phones[0].strip() if phones else None
 
+    # ── Name — spaCy is reliable for PERSON ────────────────────────────────
     name = None
     for ent in doc.ents:
         if ent.label_ == "PERSON":
             name = ent.text
             break
 
-    organizations = []
-    text_lower    = text.lower()
+    # ── Organizations — whitelist ONLY, no spaCy guessing ──────────────────
+    organizations = extract_organizations(text)
 
-    for org in KNOWN_ORGS:
-        if org.lower() in text_lower and org not in organizations:
-            organizations.append(org)
-
-    for ent in doc.ents:
-        if ent.label_ == "ORG":
-            clean = ent.text.strip()
-
-            # Remove bullet points and special characters from start
-            clean = clean.lstrip("•●▪-– ")
-
-            if (
-                clean.lower() not in ORG_BLOCKLIST
-                and len(clean) > 4
-                and clean not in organizations
-                and not clean.isupper()
-                and sum(1 for c in clean if c.isupper()) < len(clean) * 0.7
-                and "•" not in clean          # ← skip fragments with bullet points
-                and "certificate" not in clean.lower()   # ← skip certifications
-                and "simulation" not in clean.lower()    # ← skip simulation titles
-                and "project" not in clean.lower()       # ← skip project names
-            ):
-                organizations.append(clean)
-                
-    organizations = remove_substrings(organizations)
     return {
         "name"         : name,
         "email"        : email,
         "phone"        : phone,
         "organizations": organizations
     }
+
+
+def extract_organizations(text: str) -> list:
+    """
+    Detect organizations using whitelist matching with word boundaries.
+    Prevents substring matches like 'Ola' matching inside 'Solar'.
+    """
+    organizations = []
+
+    for org in KNOWN_ORGS:
+        # Use word boundary regex to prevent partial matches
+        pattern = r'\b' + re.escape(org) + r'\b'
+        if re.search(pattern, text, re.IGNORECASE):
+            if org not in organizations:
+                organizations.append(org)
+
+    return organizations
 
 
 def extract_skills(text: str) -> list:
